@@ -6,4 +6,6 @@ The entrypoint is main.py. Do ensure that you have installed the python library 
 
 
 ![MainScreen](Screenshots/MainScreen.png)
-![Warping](_warpimg.bmp){:height="36px"}
+![Warping](_warpimg.bmp)
+![Screenshot| 300x200](Screenshots/Screenshot1.png)
+
