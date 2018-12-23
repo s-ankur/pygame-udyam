@@ -1,9 +1,9 @@
 __author__ = 'AnkuR'
+from Menu import menuloop
+from Engine import gameloop
+from Ships import firsttime
 import Engine
 Engine.init()
-from Ships import firsttime
-from Engine import gameloop
-from Menu import menuloop
 
 
 while True:

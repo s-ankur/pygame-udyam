@@ -1,6 +1,7 @@
 __author__ = 'AnkuR'
 
-import pygame,cmath
+import pygame
+import cmath
 from Colors import *
 from Helper import coords
 
@@ -53,7 +54,7 @@ class Drawable:
 
 class Absolute(Drawable):
     focus = Drawable()
-    focus.pos=coords((0,0))
+    focus.pos = coords((0, 0))
 
     def __init__(self, pos):
         self.init_absolute(coords(pos))
@@ -63,7 +64,7 @@ class Absolute(Drawable):
         self.pos = pos
 
     def draw(self):
-        sprite_center=coords(self.image.get_rect().center)
+        sprite_center = coords(self.image.get_rect().center)
         pos = center + self.pos - self.focus.pos - sprite_center
         screen.blit(self.image, (pos.real, pos.imag))
 
@@ -83,10 +84,10 @@ class DefaultManager:
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
-                        Playable.playables=[]
-                        Drawable.drawables=[]
-                        selectables=[]
-                        return False
+                    Playable.playables = []
+                    Drawable.drawables = []
+                    selectables = []
+                    return False
         return True
 
 
@@ -99,10 +100,9 @@ def init():
     pygame.init()
     FPS = 20
     scr_size = (width, height) = (800, 400)  # setting a sceen size
-    center = coords(scr_size)/2
+    center = coords(scr_size) / 2
     screen = pygame.display.set_mode(scr_size)  # creating a screen object using pygame.display class
     clock = pygame.time.Clock()  # creating a clock object, used to provide delay to the objects
-
 
 
 def gameloop():

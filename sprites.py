@@ -23,7 +23,8 @@ class BlueShip:
     sprite = pygame.image.load('_ship_blue.bmp')
     sprite.set_colorkey(black)
 
-ships=(BlueShip,PurpleShip,GreenShip,OrangeShip)
+
+ships = (BlueShip, PurpleShip, GreenShip, OrangeShip)
 
 
 """___Planets___"""
@@ -48,7 +49,8 @@ class RedPlanet:
     sprite = pygame.image.load('_planet_red.bmp')
     sprite.set_colorkey(black)
 
-planets=(ChlorinePlanet,BluePlanet,RedPlanet)
+
+planets = (ChlorinePlanet, BluePlanet, RedPlanet)
 
 
 """___Misc___"""
@@ -62,6 +64,7 @@ class Bullet1:
 class Bullet2:
     sprite = pygame.image.load('_bullets_2.png')
     sprite.set_colorkey(black)
+
 
 class Bullet3:
     sprite = pygame.image.load('_bullets_3.bmp')

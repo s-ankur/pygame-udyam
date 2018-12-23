@@ -2,8 +2,10 @@ from Misc import Explosion
 
 __author__ = 'AnkuR'
 
-import cmath,random, pygame
-from Engine import Absolute, Playable, Event, DefaultManager,scr_size,clock,Drawable,screen ,Moveable
+import cmath
+import random
+import pygame
+from Engine import Absolute, Playable, Event, DefaultManager, scr_size, clock, Drawable, screen, Moveable
 import sprites
 from Weapon import weapons
 import AIs
@@ -11,10 +13,10 @@ from status import *
 from Planets import Planet
 from Teams import Team
 from Helper import coords
-selectables=[]
+selectables = []
 
 
-class Ship(Playable, Absolute,Moveable):
+class Ship(Playable, Absolute, Moveable):
     speed = 4
 
     def delete(self):
@@ -28,9 +30,8 @@ class Ship(Playable, Absolute,Moveable):
         Explosion(self.pos)
 
     def init_ship(self, pos):
-        self.pos=pos
+        self.pos = pos
         self.health = 100
-
 
     def start_ship(self):
         self.init_playable()
@@ -44,42 +45,38 @@ class Ship(Playable, Absolute,Moveable):
         self.start_ship()
 
 
-
 class AiShip(Ship):
-    AI=AIs.EasyAI
+    AI = AIs.EasyAI
 
-
-    def __init__(self, boss,sprite):
-        self.boss=boss
+    def __init__(self, boss, sprite):
+        self.boss = boss
         self.boss_pos = boss.pos
-        self.sprite=sprite
+        self.sprite = sprite
         self.init_aiship()
-
 
     def init_aiship(self):
         r1 = random.randrange(-patrol_dist, patrol_dist)
         r2 = random.randrange(-patrol_dist, patrol_dist)
         pos = self.boss_pos + complex(r1, r2)
-        self.ai=self.AI(self)
+        self.ai = self.AI(self)
         self.init_ship(pos)
         self.start()
 
-    
     def play(self):
         self.ai.think()
         self.moveable()
 
 
 class PlayerShip(Ship):
-    sprite= sprites.OrangeShip
+    sprite = sprites.OrangeShip
 
     def __init__(self, pos):
         self.init_ship(pos)
         self.start()
 
     def start(self):
-        Event.manager=self
-        Absolute.focus=self
+        Event.manager = self
+        Absolute.focus = self
         self.move = [0, 0]
         self.start_ship()
         selectables.remove(self)
@@ -87,7 +84,7 @@ class PlayerShip(Ship):
 
     def delete(self):
         self.del_ship()
-        Event.manager=DefaultManager
+        Event.manager = DefaultManager
 
     def events(self):
         global selectables
@@ -104,18 +101,18 @@ class PlayerShip(Ship):
                 if event.key == pygame.K_DOWN:
                     self.weapon.fire_weapon()
                 if event.key == pygame.K_TAB:
-                    length=len(selectables)
-                    if length==0:
-                        self.target=None
+                    length = len(selectables)
+                    if length == 0:
+                        self.target = None
                     else:
-                        self.target=selectables[random.randrange(0,length)]
+                        self.target = selectables[random.randrange(0, length)]
 
                 if event.key == pygame.K_w:
                     warp()
                 if event.key == pygame.K_m:
-                    Playable.playables=[]
-                    Drawable.drawables=[]
-                    selectables=[]
+                    Playable.playables = []
+                    Drawable.drawables = []
+                    selectables = []
                     return False
 
             if event.type == pygame.KEYUP:  # if a key is unpressed
@@ -124,7 +121,6 @@ class PlayerShip(Ship):
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                     self.move[0] = 0
         return True
-
 
     def play(self):
         self.process_keys()
@@ -142,28 +138,27 @@ class PlayerShip(Ship):
             self.impulse = 0
 
 
-class Selector(Absolute,Playable):
+class Selector(Absolute, Playable):
 
-    image= pygame.image.load('_selector.bmp')
-    image.set_colorkey((0,0,0))
+    image = pygame.image.load('_selector.bmp')
+    image.set_colorkey((0, 0, 0))
 
-    def __init__(self,player):
-        self.player=player
+    def __init__(self, player):
+        self.player = player
         self.init_playable()
 
-
     def play(self):
-        target=self.player.target
+        target = self.player.target
         if target is None:
             self.del_drawable()
         else:
             if self not in Drawable.drawables:
                 self.init_drawable()
-            self.pos=target.pos
+            self.pos = target.pos
 
 
-size=(scr_size[0]/2-30,scr_size[1]/2-30)
-player_team=None
+size = (scr_size[0] / 2 - 30, scr_size[1] / 2 - 30)
+player_team = None
 
 
 def pos():
@@ -173,32 +168,32 @@ def pos():
 def firsttime():
     global player_team
 
-    planet=Planet(complex(0,0),sprites.AquaPlanet)
-    planetteam=Team()
-    for i in range(random.randrange(1,5)):
-        ship=AiShip(planet,sprites.GreenShip)
-        ship.weapon=weapons[0](ship)
+    planet = Planet(complex(0, 0), sprites.AquaPlanet)
+    planetteam = Team()
+    for i in range(random.randrange(1, 5)):
+        ship = AiShip(planet, sprites.GreenShip)
+        ship.weapon = weapons[0](ship)
         planetteam.register(ship)
 
-    player=PlayerShip(coords((40,40)))
-    player.weapon=weapons[1](player)
-    guardian=AiShip(player,sprites.OrangeShip)
-    guardian.weapon=weapons[0](guardian)
-    player_team=Team(player,guardian)
+    player = PlayerShip(coords((40, 40)))
+    player.weapon = weapons[1](player)
+    guardian = AiShip(player, sprites.OrangeShip)
+    guardian.weapon = weapons[0](guardian)
+    player_team = Team(player, guardian)
 
 
 def warp():
-        global selectables
-        Playable.playables=[]
-        Drawable.drawables=[]
-        selectables=[]
-        screen.fill((0,0,0))
-        warpimg=pygame.image.load('_warpimg.bmp')
-        screen.blit(warpimg, (600,350))
-        pygame.display.update()
-        clock.tick(2)
-        create_planets()
-        player_team.start()
+    global selectables
+    Playable.playables = []
+    Drawable.drawables = []
+    selectables = []
+    screen.fill((0, 0, 0))
+    warpimg = pygame.image.load('_warpimg.bmp')
+    screen.blit(warpimg, (600, 350))
+    pygame.display.update()
+    clock.tick(2)
+    create_planets()
+    player_team.start()
 
 
 def create_planets():
@@ -206,27 +201,18 @@ def create_planets():
 
     for i in range(n_planets):
         index = random.randrange(0, len(sprites.planets))
-        planet_pos=pos()
-        planet=Planet(planet_pos,sprites.planets[index])
+        planet_pos = pos()
+        planet = Planet(planet_pos, sprites.planets[index])
         create_ships(planet)
 
 
 def create_ships(planet):
-        n_ships = random.randrange(1,6)
-        index_sprite = random.randrange(0, len(sprites.ships))
+    n_ships = random.randrange(1, 6)
+    index_sprite = random.randrange(0, len(sprites.ships))
 
-        planetteam=Team()
-        for i in range(1, n_ships):
-            weapon_index = random.randrange(0, len(weapons))
-            ship=AiShip(planet,sprites.ships[index_sprite])
-            ship.weapon=weapons[weapon_index](ship)
-            planetteam.register(ship)
-
-
-
-
-
-
-
-
-
+    planetteam = Team()
+    for i in range(1, n_ships):
+        weapon_index = random.randrange(0, len(weapons))
+        ship = AiShip(planet, sprites.ships[index_sprite])
+        ship.weapon = weapons[weapon_index](ship)
+        planetteam.register(ship)

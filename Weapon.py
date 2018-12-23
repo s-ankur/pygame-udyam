@@ -1,30 +1,33 @@
-import pygame,random,cmath
+import pygame
+import random
+import cmath
 
 from Engine import Drawable, Playable, Absolute, Moveable
-import Engine,sprites
+import Engine
+import sprites
 from Helper import dist
 from Misc import Ephemeral
 
 
-def hurt_target(source,stats):# hurt the ship if it exists
+def hurt_target(source, stats):  # hurt the ship if it exists
     if source.target is not None:
 
         if source.target.health > 0:
-            source.target.health-=stats.damage *random.random()
+            source.target.health -= stats.damage * random.random()
             source.target.team.attackedby(source)
         else:
-            if random.randrange(0,3)==2 and not hasattr(source,'events'):  
-                source.target.health=40
-                source.target.target=None
-                source.target.boss=source
+            if random.randrange(0, 3) == 2 and not hasattr(source, 'events'):
+                source.target.health = 40
+                source.target.target = None
+                source.target.boss = source
                 source.team.register(source.target)
                 source.team.target(None)
-
 
             else:
 
                 source.target.delete()
-                source.target=None
+                source.target = None
+
 
 class DefaultWeapon:
     damage = 10
@@ -34,7 +37,7 @@ class DefaultWeapon:
 
 class Weapon(Playable):
 
-    def __init__(self, source):#initalize weapon
+    def __init__(self, source):  # initalize weapon
         self.source = source
         self.cooldown = 0
 
@@ -54,13 +57,14 @@ class Weapon(Playable):
         pass
 
 
-class Phasor(Weapon,Drawable):
+class Phasor(Weapon, Drawable):
     stats = DefaultWeapon
+
     def fire(self):
-        hurt_target(self.source,self.stats)
+        hurt_target(self.source, self.stats)
         self.init_drawable()
 
-    stats=DefaultWeapon
+    stats = DefaultWeapon
 
     def draw(self):
         if self.cooldown < 10:
@@ -72,13 +76,14 @@ class Phasor(Weapon,Drawable):
             target_pos = self.source.target.pos + Engine.center - self.source.focus.pos
             pygame.draw.line(Engine.screen, (255, 0, 0), (pos.real, pos.imag), (target_pos.real, target_pos.imag))
 
+
 class MissileLauncherStats:
     cooldown = 40
     range = 400
 
 
 class MissileLauncher(Weapon):
-    stats=MissileLauncherStats
+    stats = MissileLauncherStats
 
     def fire(self):
         Missile(self.source)
@@ -90,28 +95,26 @@ class MissileStats:
     range = 7
 
 
-class Missile(Ephemeral,Moveable):
-    stats=MissileStats
-    sprite=sprites.Bullet3
-    speed=6
-    impulse=1
-    image=sprite.sprite
+class Missile(Ephemeral, Moveable):
+    stats = MissileStats
+    sprite = sprites.Bullet3
+    speed = 6
+    impulse = 1
+    image = sprite.sprite
 
-    def __init__(self,source):
+    def __init__(self, source):
         if source.target is not None:
-            self.source=source
-            self.init_ephemeral(self.stats.cooldown,source.pos)
-
+            self.source = source
+            self.init_ephemeral(self.stats.cooldown, source.pos)
 
     def ephemeral(self):
         if self.source.target is not None:
-            if dist(self.pos,self.source.target.pos)<self.stats.range:
+            if dist(self.pos, self.source.target.pos) < self.stats.range:
                 self.del_ephemeral()
-                hurt_target(self.source,self.stats)
+                hurt_target(self.source, self.stats)
             else:
-                self.angle=cmath.phase(self.source.target.pos-self.pos)
+                self.angle = cmath.phase(self.source.target.pos - self.pos)
                 self.moveable()
 
 
-
-weapons=(Phasor,MissileLauncher)
+weapons = (Phasor, MissileLauncher)
